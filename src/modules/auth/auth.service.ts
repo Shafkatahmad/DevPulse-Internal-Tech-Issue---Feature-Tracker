@@ -10,7 +10,7 @@ const loginUserIntoDB = async (payload: LoginUser) => {
 
   const userData = await pool.query(
     `
-    SELECT id, name, password, role FROM users WHERE email=$1
+    SELECT * FROM users WHERE email=$1
     `,
     [email],
   );
@@ -28,6 +28,8 @@ const loginUserIntoDB = async (payload: LoginUser) => {
     id: user.id,
     name: user.name,
     role: user.role,
+    created_at: user.created_at,
+    updated_at: user.updated_at,
   };
 
   const accessToken = jwt.sign(
@@ -46,7 +48,7 @@ const loginUserIntoDB = async (payload: LoginUser) => {
     },
   );
 
-  return { accessToken, refreshToken };
+  return { accessToken, refreshToken, user };
 };
 
 export const authServer = {

@@ -5,6 +5,7 @@ import express, {
 } from "express";
 import { userRoute } from "./modules/users/user.route";
 import { authRoute } from "./modules/auth/auth.route";
+import { issuesRoute } from "./modules/issues/issues.route";
 
 const app: Application = express();
 
@@ -15,6 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // exposed endpoints
 app.use("/api/auth/signup", userRoute);
+app.use("/api/issues", issuesRoute);
 app.use("/api/auth/login", authRoute);
 
 // exponsed sanity check endpoint
