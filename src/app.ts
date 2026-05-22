@@ -3,13 +3,21 @@ import express, {
   type Request,
   type Response,
 } from "express";
+import { userRoute } from "./modules/users/user.route";
+import { authRoute } from "./modules/auth/auth.route";
 
 const app: Application = express();
 
 // meddlewares
 app.use(express.json());
 app.use(express.text());
+app.use(express.urlencoded({ extended: true }));
 
+// exposed endpoints
+app.use("/api/auth/signup", userRoute);
+app.use("/api/auth/login", authRoute);
+
+// exponsed sanity check endpoint
 app.get("/", (req: Request, res: Response) => {
   res.status(200).json({
     message: "Welcome to DevPulse Server",
