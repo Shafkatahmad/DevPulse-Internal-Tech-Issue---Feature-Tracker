@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { authServer } from "./auth.service";
+import sendResponse from "../utility/sendResponse";
 
 const loginUser = async (req: Request, res: Response) => {
   try {
@@ -12,7 +13,8 @@ const loginUser = async (req: Request, res: Response) => {
       sameSite: "lax",
     });
 
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: 201,
       success: true,
       message: "Login successful",
       data: {
@@ -21,7 +23,8 @@ const loginUser = async (req: Request, res: Response) => {
       },
     });
   } catch (error: any) {
-    res.status(500).json({
+    sendResponse(res, {
+      statusCode: 500,
       success: false,
       message: error.message,
       error: error,
