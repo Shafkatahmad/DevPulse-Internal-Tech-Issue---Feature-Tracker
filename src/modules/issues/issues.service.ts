@@ -20,8 +20,9 @@ const createIssueIntoDB = async (payload: issue, req: Request) => {
     `,
     [decoded.id, title, description, type],
   );
+  // console.log(result.rows[0]);
 
-  return result;
+  return result.rows[0];
 };
 
 export const issuesService = {

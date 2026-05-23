@@ -15,30 +15,38 @@ const auth = () => {
         });
       }
 
-      const decoded = jwt.decode(
+      // const decoded = jwt.decode(
+      //   token as string,
+      //   config.access_token_secret as DecodeOptions,
+      // ) as JwtPayload;
+      // console.log(decoded);
+
+      const decoded = jwt.verify(
         token as string,
-        config.access_token_secret as DecodeOptions,
+        config.access_token_secret as string,
       ) as JwtPayload;
       // console.log(decoded);
 
-      const userData = await pool.query(
-        `
-        SELECT * FROM users WHERE email=$1
-        `,
-        [decoded.email],
-      );
+      if (!decoded) throw new Error("Invalid credentials!");
 
-      const user = userData.rows[0];
-      if (userData.rows.length === 0) {
-        res.status(404).json({
-          success: false,
-          message: "User not found",
-        });
-      }
+      // const userData = await pool.query(
+      //   `
+      //   SELECT * FROM users WHERE email=$1
+      //   `,
+      //   [decoded.email],
+      // );
+
+      // const user = userData.rows[0];
+      // if (userData.rows.length === 0) {
+      //   res.status(404).json({
+      //     success: false,
+      //     message: "User not found",
+      //   });
+      // }
 
       next();
     } catch (error) {
-      next(error);
+      next(new Error("Invalid Credentials!"));
     }
   };
 };
