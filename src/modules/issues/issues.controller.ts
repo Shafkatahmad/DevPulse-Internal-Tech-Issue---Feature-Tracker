@@ -6,20 +6,6 @@ const createIssue = async (req: Request, res: Response) => {
   try {
     const result = await issuesService.createIssueIntoDB(req.body, req);
 
-    // res.status(201).json({
-    //   success: true,
-    //   message: "Issue created successfully",
-    //   data: {
-    //     id: result.id,
-    //     title: result.title,
-    //     description: result.description,
-    //     type: result.type,
-    //     status: result.status,
-    //     reporter_id: result.reporter_id,
-    //     created_at: result.created_at,
-    //     updated_at: result.updated_at,
-    //   },
-    // });
     sendResponse(res, {
       statusCode: 201,
       success: true,
@@ -36,11 +22,6 @@ const createIssue = async (req: Request, res: Response) => {
       },
     });
   } catch (error: any) {
-    // res.status(500).json({
-    //   success: false,
-    //   message: error.message,
-    //   error: error,
-    // });
     sendResponse(res, {
       statusCode: 500,
       success: false,
@@ -55,10 +36,6 @@ const getAllIssues = async (req: Request, res: Response) => {
     const query = req.query;
     const result = await issuesService.getAllIssuesFromDB(query);
 
-    // res.status(200).json({
-    //   success: true,
-    //   data: result,
-    // });
     sendResponse(res, {
       statusCode: 200,
       success: true,
@@ -66,11 +43,6 @@ const getAllIssues = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (error: any) {
-    // res.status(500).json({
-    //   success: false,
-    //   message: error.message,
-    //   error: error,
-    // });
     sendResponse(res, {
       statusCode: 500,
       success: false,
@@ -94,11 +66,6 @@ const getSingleIssue = async (req: Request, res: Response) => {
       });
     }
 
-    // return res.status(200).json({
-    //   success: true,
-    //   message: "Issue retrieved successfully",
-    //   data: result,
-    // });
     sendResponse(res, {
       statusCode: 200,
       success: true,
@@ -106,11 +73,6 @@ const getSingleIssue = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (error: any) {
-    // return res.status(500).json({
-    //   success: false,
-    //   message: error.message,
-    //   error: error,
-    // });
     sendResponse(res, {
       statusCode: 500,
       success: false,
@@ -130,11 +92,6 @@ const updateIssue = async (req: Request, res: Response) => {
       id as string,
     );
 
-    // return res.status(200).json({
-    //   success: true,
-    //   message: "Issue updated successfully",
-    //   data: result,
-    // });
     sendResponse(res, {
       statusCode: 200,
       success: true,
@@ -142,11 +99,6 @@ const updateIssue = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (error: any) {
-    // return res.status(500).json({
-    //   success: false,
-    //   message: error.message,
-    //   error: error,
-    // });
     sendResponse(res, {
       statusCode: 500,
       success: false,
@@ -162,20 +114,12 @@ const deleteIssue = async (req: Request, res: Response) => {
 
     const result = await issuesService.deleteIssueFromDB(req, id as string);
 
-    // return res.status(200).json({
-    //   success: true,
-    //   message: "Issue deleted successfully",
-    // });
     sendResponse(res, {
       statusCode: 200,
       success: true,
       message: "Issue deleted successfully",
     });
   } catch (error: any) {
-    // return res.status(500).json({
-    //   success: false,
-    //   message: error.message,
-    // });
     sendResponse(res, {
       statusCode: 500,
       success: false,
