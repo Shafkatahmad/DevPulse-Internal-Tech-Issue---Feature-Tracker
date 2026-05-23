@@ -206,9 +206,40 @@ const updateIssueIntoDB = async (payload: issue, req: Request, id: string) => {
   return updateResult.rows[0];
 };
 
+const deleteIssueFromDB = async (req: Request, id: string) => {
+  const token = req.headers.authorization;
+
+  if (!token) {
+    throw new Error("Unauthorized access");
+  }
+
+  const decoded = jwt.verify(
+    token as string,
+    config.access_token_secret as string,
+  ) as JwtPayload;
+
+  if (decoded.role !== "maintainer") {
+    throw new Error("Only maintainer can delete issues");
+  }
+
+  const result = await pool.query(
+    `
+    DELETE FROM issues WHERE id = $1 RETURNING *
+    `,
+    [id],
+  );
+
+  if (result.rows.length === 0) {
+    throw new Error("Issue id doesn't exist");
+  }
+
+  return result;
+};
+
 export const issuesService = {
   createIssueIntoDB,
   getAllIssuesFromDB,
   getSingleIssueFromDB,
   updateIssueIntoDB,
+  deleteIssueFromDB,
 };
