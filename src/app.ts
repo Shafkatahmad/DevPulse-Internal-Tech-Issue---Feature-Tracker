@@ -7,10 +7,12 @@ import { userRoute } from "./modules/users/user.route";
 import { authRoute } from "./modules/auth/auth.route";
 import { issuesRoute } from "./modules/issues/issues.route";
 import globalErrorHandler from "./modules/middleware/globalErrorHandler";
+import CookieParser from "cookie-parser";
 
 const app: Application = express();
 
 // meddlewares
+app.use(CookieParser());
 app.use(express.json());
 app.use(express.text());
 app.use(express.urlencoded({ extended: true }));
