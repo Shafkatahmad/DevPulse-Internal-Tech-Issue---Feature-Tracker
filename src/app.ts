@@ -1,5 +1,6 @@
 import express, {
   type Application,
+  type NextFunction,
   type Request,
   type Response,
 } from "express";
@@ -31,5 +32,8 @@ app.get("/", (req: Request, res: Response) => {
     message: "Welcome to DevPulse Server",
   });
 });
+
+// Global Error Handling Middleware
+app.use(globalErrorHandler);
 
 export default app;
