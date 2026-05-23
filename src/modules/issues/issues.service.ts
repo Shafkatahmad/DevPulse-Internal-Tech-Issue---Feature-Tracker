@@ -140,8 +140,75 @@ const getSingleIssueFromDB = async (id: string) => {
   return enrichedIssue;
 };
 
+const updateIssueIntoDB = async (payload: issue, req: Request, id: string) => {
+  const { title, description, type } = payload;
+  const issueResult = await pool.query(
+    `
+    SELECT * FROM issues WHERE id=$1
+    `,
+    [id],
+  );
+
+  const issue = issueResult.rows[0];
+
+  if (issueResult.rows.length === 0) {
+    throw new Error("Issue not found");
+  }
+
+  const token = req.headers.authorization;
+  if (!token) {
+    throw new Error("Unauthorized access");
+  }
+  const decoded = jwt.verify(
+    token as string,
+    config.access_token_secret as string,
+  ) as JwtPayload;
+
+  const userResult = await pool.query(
+    `
+    SELECT * FROM users WHERE id=$1
+    `,
+    [decoded.id],
+  );
+
+  const logInUser = userResult.rows[0];
+
+  if (!logInUser) {
+    throw new Error("User not found");
+  }
+
+  if (logInUser.role === "contributor") {
+    if (issue.reporter_id !== logInUser.id) {
+      throw new Error("You are not authorized to update this issue");
+    }
+
+    if (issue.status !== "open") {
+      throw new Error(
+        "Contributors can update issues only when status is open",
+      );
+    }
+  }
+
+  const updateResult = await pool.query(
+    `
+    UPDATE issues
+    SET
+      title = $1,
+      description = $2,
+      type = $3,
+      updated_at = NOW()
+    WHERE id = $4
+    RETURNING *
+    `,
+    [title, description, type, id],
+  );
+
+  return updateResult.rows[0];
+};
+
 export const issuesService = {
   createIssueIntoDB,
   getAllIssuesFromDB,
   getSingleIssueFromDB,
+  updateIssueIntoDB,
 };
