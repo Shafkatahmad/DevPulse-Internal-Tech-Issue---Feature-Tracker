@@ -26,7 +26,6 @@ const createIssueIntoDB = async (payload: issue, req: Request) => {
 };
 
 const getAllIssuesFromDB = async (query: any) => {
-  // const { sort = "newest", type, status } = query;
   function buildIssuesQuery(query: any) {
     const conditions: string[] = [];
     const values: any[] = [];
@@ -52,10 +51,50 @@ const getAllIssuesFromDB = async (query: any) => {
 
     return { sql, values };
   }
-  const { sql, values } = buildIssuesQuery(query);
-  const result = await pool.query(sql, values);
 
-  return result;
+  // 1. Get issues
+  const { sql, values } = buildIssuesQuery(query);
+  const issuesResult = await pool.query(sql, values);
+  const issues = issuesResult.rows;
+
+  if (issues.length === 0) {
+    return [];
+  }
+
+  // 2. Extract unique reporter IDs
+  const reporterIds = [...new Set(issues.map((issue) => issue.reporter_id))];
+
+  // 3. Fetch reporters in one query (batch)
+  const reportersResult = await pool.query(
+    `
+    SELECT id, name, role
+    FROM users
+    WHERE id = ANY($1)
+    `,
+    [reporterIds],
+  );
+
+  // 4. Create lookup map
+  const reporterMap = new Map();
+
+  for (const user of reportersResult.rows) {
+    reporterMap.set(user.id, user);
+  }
+
+  // 5. Attach reporter object to each issue
+  const enrichedIssues = issues.map((issue) => ({
+    id: issue.id,
+    title: issue.title,
+    description: issue.description,
+    type: issue.type,
+    status: issue.status,
+    reporter: reporterMap.get(issue.reporter_id) || null,
+    created_at: issue.created_at,
+    updated_at: issue.updated_at,
+  }));
+
+  // 6. Return enriched result
+  return enrichedIssues;
 };
 
 export const issuesService = {
